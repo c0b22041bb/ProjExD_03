@@ -3,6 +3,7 @@ import sys
 import time
 
 import pygame as pg
+import math
 
 
 WIDTH = 1600  # ゲームウィンドウの幅
@@ -56,6 +57,8 @@ class Bird:
         self.img = self.imgs[(+5, 0)] # デフォルト:右向き
         self.rct = self.img.get_rect()
         self.rct.center = xy
+        
+        self.dire = (+5,0)
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -77,6 +80,12 @@ class Bird:
             if key_lst[k]:
                 sum_mv[0] += mv[0]
                 sum_mv[1] += mv[1]
+
+        if sum_mv != [0, 0]:
+            self.dire = tuple(sum_mv)#移動量の合計値リストが[0,0]でない時，self.direを合計値リストの値で更新
+
+
+
         self.rct.move_ip(sum_mv)
         if check_bound(self.rct) != (True, True):
             self.rct.move_ip(-sum_mv[0], -sum_mv[1])
@@ -96,6 +105,22 @@ class Beam:
         self.rct.left = bird.rct.right  # こうかとんの右横座標
         self.rct.centery = bird.rct.centery  # こうかとんの中心縦座標
         self.vx, self.vy = +5, 0
+
+        """
+        逆向きのビーム画像を表示
+        """
+        vx, vy = bird.dire  # こうかとんの移動方向からビームの速度を取得
+        angle = math.degrees(math.atan2(-vy, vx))  # 直交座標から極座標の角度を計算
+        
+        self.image = pg.image.load(f"fig/beam.png")
+        self.image2 = pg.transform.flip(self.image,True,False)
+
+        # こうかとんの向いている方向を考慮した初期配置
+        self.rct = self.image2.get_rect()
+        self.rct.centerx = bird.rct.centerx + bird.rct.width * vx / 5
+        self.rct.centery = bird.rct.centery + bird.rct.height * vy / 5
+        self.vx = vx
+        self.vy = vy
 
     def update(self, screen: pg.Surface):
         """
@@ -126,6 +151,9 @@ class Explosion:
             self.index += 1
         self.image = self.images[self.index]
         return False  # 爆発が続行中であることを示すためにFalseを返す
+    
+
+
 
 
 
