@@ -114,7 +114,7 @@ class Beam:
         
         self.image = pg.image.load(f"fig/beam.png")
         self.image2 = pg.transform.flip(self.image,True,False)
-
+        
         # こうかとんの向いている方向を考慮した初期配置
         self.rct = self.image2.get_rect()
         self.rct.centerx = bird.rct.centerx + bird.rct.width * vx / 5
@@ -133,27 +133,30 @@ class Beam:
 class Explosion:
     """
     爆発エフェクトに関するクラス
+    引数 center: 爆発エフェクトの中心位置を指定
+    imagesリスト: 爆発エフェクトに使用される画像のリストを格納する
+
     """
     def __init__(self, center):
-        self.images = [pg.image.load(f"fig/explosion.gif")]
-        self.images += [pg.transform.flip(img, True, False) for img in self.images]  # 左右に反転した画像を追加
-        self.index = 0
-        self.image = self.images[self.index]
-        self.rct = self.image.get_rect()
-        self.rct.center = center
-        self.life = 10
+        self.images = [pg.image.load(f"fig/explosion.gif")] #画像を読み込み
+        self.images += [pg.transform.flip(img, True, False) for img in self.images]  # 上下左右にflipしたものを画像リストに格納
+        self.index = 0 # index変数は初期値を0としてインデックスを保持する。
+        self.image = self.images[self.index] #現在の画像を表示させる。
+        self.rct = self.image.get_rect()#爆発エフェクトを表示
+        self.rct.center = center #位置を設定
+        self.life = 10 #表示時間(10)lifeを設定
 
     def update(self):
-        self.life -= 1
-        if self.life <= 0:
+        self.life -= 1#爆発経過時間lifeを１減算
+        if self.life <= 0: #0より小さい値の場合
             return True  # 爆発が終了したことを示すためにTrueを返す
-        if self.index < len(self.images) - 1:
+        if self.index < len(self.images) - 1: #imagesリストの最後のインデックスに達していない場合、indexを更新する
             self.index += 1
         self.image = self.images[self.index]
         return False  # 爆発が続行中であることを示すためにFalseを返す
     
 
-
+ 
 
 
 
